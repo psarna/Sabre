@@ -115,8 +115,7 @@ public:
 					neighbour_count += fields_[i]->neighbour((Dir)dir).tile != kNoTile;
 				}
 			}
-			printf("nk=%d\n", neighbour_count);
-			return neighbour_count > 2 * fields_.size() - 2;
+			return (size_t)neighbour_count > 2 * fields_.size() - 2;
 		}
 
 		bool valid() const {

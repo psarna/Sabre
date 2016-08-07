@@ -1,13 +1,23 @@
-#include "board.h"
 #include <cstdio>
 #include <iostream>
+
+#include "board.h"
+#include "dictionary.h"
+#include "tile_bag.h"
 
 typedef Board<6, 8> GameBoard;
 typedef GameBoard::Field Field;
 typedef GameBoard::Move Move;
 
 int main() {
+	srand(0x10);
 	GameBoard &board = GameBoard::instance();
+	TileBag tile_bag(
+		TileBag::TileList{'a', 'b', 'c', 'd', 'e', 'a'}
+	);
+	Dictionary dictionary(
+		{"abak", "eig", "asan"}
+	);
 
 	board.put(2, 4, 'a');
 	board.put(3, 4, 'b');
@@ -27,6 +37,12 @@ int main() {
 	move.add(board.at(4, 4));
 	move.add(board.at(5, 4));
 	std::cout << std::boolalpha << move.adjacent() << move.consistent(GameBoard::kEast) << move.consistent(GameBoard::kSouth) << move.valid() << std::endl;
+
+	std::cout << dictionary.has("aids") << dictionary.has("abak") << std::endl;
+
+	while (!tile_bag.empty()) {
+		std::cout << tile_bag.get() << ',';
+	} std::cout << std::endl;
 
 	board.print();
 }
