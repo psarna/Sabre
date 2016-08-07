@@ -26,7 +26,7 @@ public:
 	}
 
 private:
-	std::unordered_set<std::string> words_;
+	WordSet words_;
 };
 
 #endif

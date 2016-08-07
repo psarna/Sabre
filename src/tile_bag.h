@@ -12,30 +12,13 @@ public:
 	static const int kMaxQuantity = 64;
 
 	typedef char Tile;
+	static const Tile kNoTile = 0;
 
 	typedef std::vector<Tile> TileList;
 
-	TileBag(TileList &&tiles) noexcept : tiles_(tiles) {
+	TileBag(const std::string &tiles) : tiles_(tiles.begin(), tiles.end()) {
 		std::random_shuffle(tiles_.begin(), tiles_.end());
-	}
-
-	TileBag(const std::string &path) {
-		std::ifstream fs(path);
-		std::string line;
-
-		while (std::getline(fs, line)) {
-			Tile tile;
-			int quantity;
-			if (std::sscanf(line.c_str(), "%c %d", &tile, &quantity) != 2
-				|| quantity < 0 || quantity > kMaxQuantity || !std::isalpha(tile)) {
-				throw std::runtime_error("incorrect tilebag format");
-			}
-			for (int i = 0; i < quantity; ++i) {
-				tiles_.push_back(tile);
-			}
-		}
-
-		std::random_shuffle(tiles_.begin(), tiles_.end());
+		for (Tile t : tiles_) std::printf("[%c]", t);
 	}
 
 	Tile get() {

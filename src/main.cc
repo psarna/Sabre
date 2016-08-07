@@ -8,12 +8,13 @@
 typedef Board<6, 8> GameBoard;
 typedef GameBoard::Field Field;
 typedef GameBoard::Move Move;
+typedef GameBoard::Player Player;
 
 int main() {
 	srand(0x10);
 	GameBoard &board = GameBoard::instance();
 	TileBag tile_bag(
-		TileBag::TileList{'a', 'b', 'c', 'd', 'e', 'a'}
+		"aaaabbbbccddeeffghiiiijklllmmnnooopppqrrsstttuwwxyzz"
 	);
 	Dictionary dictionary(
 		{"abak", "eig", "asan"}
@@ -40,9 +41,24 @@ int main() {
 
 	std::cout << dictionary.has("aids") << dictionary.has("abak") << std::endl;
 
-	while (!tile_bag.empty()) {
-		std::cout << tile_bag.get() << ',';
-	} std::cout << std::endl;
+	Player player;
+	while (!tile_bag.empty() && player.canTakeTile()) {
+		player.takeTile(tile_bag);
+		player.printHand();
+	}
+
+	player.putTile(2, board.at(1, 1));
+	player.putTile(4, board.at(2, 2));
+	player.putTile(3, board.at(2, 2));
+	board.print();
+	player.printHand();
+
+	player.takeTile(board.at(2, 2));
+	player.takeTile(board.at(1, 1));
+	player.putTile(2, board.at(0, 0));
+	player.putTile(6, board.at(0, 0));
+	player.putTile(3, board.at(0, 1));
 
 	board.print();
+	player.printHand();
 }

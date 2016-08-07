@@ -4,10 +4,13 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
-#include <cstdio>
 #include <functional>
+#include <iostream>
 #include <string>
 #include <vector>
+
+#include "dictionary.h"
+#include "tile_bag.h"
 
 template<int Height, int Width>
 class Board {
@@ -16,9 +19,8 @@ public:
 	static const int kHeight = Height;
 	static const int kWidth = Width;
 
-	typedef char Tile;
-	static const Tile kNoTile = 0;
-	typedef std::string Word;
+	typedef TileBag::Tile Tile;
+	typedef Dictionary::Word Word;
 
 	enum Dir {
 		kNorth, kEast, kSouth, kWest, kWrong
@@ -50,7 +52,7 @@ public:
 		}
 
 		static Field &null() {
-			static Field null_field{-1, -1, kNoTile, kWrong};
+			static Field null_field{-1, -1, TileBag::kNoTile, kWrong};
 			return null_field;
 		}
 
@@ -112,7 +114,7 @@ public:
 			int neighbour_count = 0;
 			for (size_t i = 0; i < fields_.size(); ++i) {
 				for (int dir = kNorth; dir < kWrong; ++dir) {
-					neighbour_count += fields_[i]->neighbour((Dir)dir).tile != kNoTile;
+					neighbour_count += fields_[i]->neighbour((Dir)dir).tile != TileBag::kNoTile;
 				}
 			}
 			return (size_t)neighbour_count > 2 * fields_.size() - 2;
@@ -135,6 +137,73 @@ public:
 		std::vector<const Field *> fields_;
 	};
 
+	class Player {
+	public:
+		static const int kMaxHand = 7;
+		typedef std::array<Tile, kMaxHand> Hand;
+
+		Player() : hand_(), move_() {}
+
+		Tile getTile(int i) const {
+			assert(i >= 0 && i < kMaxHand);
+			return hand_[i];
+		}
+
+		bool canPutTile(int tile_index, Field &field) {
+			return (field.tile == TileBag::kNoTile || move_.contains(field))
+			       && getTile(tile_index) != TileBag::kNoTile;
+		}
+
+		void putTile(int tile_index, Field &field) {
+			assert(canPutTile(tile_index, field));
+			std::swap(field.tile, hand_[tile_index]);
+			if (!move_.contains(field)) {
+				move_.add(field);
+			}
+		}
+
+		bool canTakeTile() const {
+			return tileCount() != kMaxHand;
+		}
+
+		bool canTakeTile(Field &field) const {
+			return move_.contains(field);
+		}
+
+		void takeTile(TileBag &tile_bag) {
+			assert(canTakeTile());
+			auto it = std::find(hand_.begin(), hand_.end(), (Tile)TileBag::kNoTile);
+			assert(it != hand_.end());
+			*it = tile_bag.get();
+		}
+
+		void takeTile(Field &field) {
+			assert(canTakeTile());
+			auto it = std::find(hand_.begin(), hand_.end(), (Tile)TileBag::kNoTile);
+			assert(it != hand_.end());
+			std::swap(*it, field.tile);
+		}
+
+		const Hand &hand() const {
+			return hand_;
+		}
+
+		int tileCount() const {
+			return kMaxHand - std::count(hand_.begin(), hand_.end(), (Tile)TileBag::kNoTile);
+		}
+
+		void printHand() const {
+			for (auto it = hand_.begin(); it != hand_.end(); ++it) {
+				std::cout << (*it == TileBag::kNoTile ? '-' : *it);
+			}
+			std::cout << std::endl;	
+		}
+
+	private:
+		Hand hand_;
+		Move move_;
+	};
+
 	Field &at(int x, int y) {
 		return fields_[x * Width + y];
 	}
@@ -151,14 +220,14 @@ public:
 		int delta_y = dir == kEast ? 1 : 0;
 		Word word;
 
-		while (x >= 0 && y >= 0 && at(x, y).tile != kNoTile) {
+		while (x >= 0 && y >= 0 && at(x, y).tile != TileBag::kNoTile) {
 			x -= delta_x;
 			y -= delta_y;
 		}
 		x += delta_x;
 		y += delta_y;
 
-		while (x < kHeight && y < kWidth && at(x, y).tile != kNoTile) {
+		while (x < kHeight && y < kWidth && at(x, y).tile != TileBag::kNoTile) {
 			word += at(x, y).tile;
 			x += delta_x;
 			y += delta_y;
@@ -175,9 +244,9 @@ public:
 		for (int i = 0; i < kHeight; ++i) {
 			for (int j = 0; j < kWidth; ++j) {
 				const Field &field = at(i, j);
-				printf("[%c]", field.tile != kNoTile ? field.tile : ' ');
+				std::cout << "[" << (field.tile != TileBag::kNoTile ? field.tile : ' ') << "]";
 			}
-			printf("\n");
+			std::cout << std::endl;
 		}
 	}
 
