@@ -4,15 +4,12 @@
 #include "board.h"
 #include "dictionary.h"
 #include "tile_bag.h"
-
-typedef Board<6, 8> GameBoard;
-typedef GameBoard::Field Field;
-typedef GameBoard::Move Move;
-typedef GameBoard::Player Player;
+#include "move.h"
+#include "player.h"
 
 int main() {
 	srand(0x10);
-	GameBoard &board = GameBoard::instance();
+	Board board(6, 8);
 	TileBag tile_bag(
 		"aaaabbbbccddeeffghiiiijklllmmnnooopppqrrsstttuwwxyzz"
 	);
@@ -29,29 +26,29 @@ int main() {
 	board.put(2, 5, 'i');
 	board.put(2, 6, 'g');
 
-	std::cout << board.getWord(board.at(3, 4), GameBoard::kEast) << std::endl;
-	std::cout << board.getWord(board.at(3, 4), GameBoard::kSouth) << std::endl;
+	std::cout << board.at(3, 4).getWord(kEast, board) << std::endl;
+	std::cout << board.at(3, 4).getWord(kSouth, board) << std::endl;
 
 	Move move;
 	move.add(board.at(2, 4));
 	move.add(board.at(3, 4));
 	move.add(board.at(4, 4));
 	move.add(board.at(5, 4));
-	std::cout << std::boolalpha << move.adjacent() << move.consistent(GameBoard::kEast) << move.consistent(GameBoard::kSouth) << move.valid() << std::endl;
+	std::cout << std::boolalpha << move.adjacent(board) << move.consistent(kEast, board) << move.consistent(kSouth, board) << move.valid(board) << std::endl;
 
 	std::cout << dictionary.has("aids") << dictionary.has("abak") << std::endl;
 
 	Player player;
 	while (!tile_bag.empty() && player.canTakeTile()) {
 		player.takeTile(tile_bag);
-		player.printHand();
+		std::cout << player << std::endl;;
 	}
 
 	player.putTile(2, board.at(1, 1));
 	player.putTile(4, board.at(2, 2));
 	player.putTile(3, board.at(2, 2));
-	board.print();
-	player.printHand();
+	std::cout << board;
+	std::cout << player << std::endl;;
 
 	player.takeTile(board.at(2, 2));
 	player.takeTile(board.at(1, 1));
@@ -59,6 +56,6 @@ int main() {
 	player.putTile(6, board.at(0, 0));
 	player.putTile(3, board.at(0, 1));
 
-	board.print();
-	player.printHand();
+	std::cout << board;
+	std::cout << player << std::endl;;
 }
