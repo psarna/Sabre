@@ -18,7 +18,6 @@ public:
 
 	TileBag(const std::string &tiles) : tiles_(tiles.begin(), tiles.end()) {
 		std::random_shuffle(tiles_.begin(), tiles_.end());
-		for (Tile t : tiles_) std::printf("[%c]", t);
 	}
 
 	Tile get() {
@@ -30,6 +29,13 @@ public:
 
 	bool empty() const {
 		return tiles_.empty();
+	}
+
+	friend std::ostream &operator<<(std::ostream &os, const TileBag &bag) {
+		for (auto &tile : bag.tiles_) {
+			os << "[" << (tile == kNoTile ? ' ' : tile) << "]";
+		}
+		return os;
 	}
 
 private:

@@ -5,7 +5,10 @@
 
 class Move {
 public:
-	void add(const Field &field) {
+	typedef Dictionary::Word Word;
+	typedef Dictionary::WordSet WordSet;
+
+	void add(Field &field) {
 		fields_.push_back(&field);
 	}
 
@@ -71,8 +74,50 @@ public:
 		return consistent(dir, board) && adjacent(board);
 	}
 
+	bool validAsFirst(Board &board) const {
+		Dir dir;
+
+		if (fields_.size() == 0)
+			return false;
+
+		dir = getDir();
+		if (dir == kWrong)
+			return false;
+
+		if (std::find(fields_.begin(), fields_.end(), &board.initialField()) == fields_.end()) {
+			return false;
+		}
+
+		return consistent(dir, board);
+	}
+
+	void clear() {
+		fields_.clear();
+	}
+
+	std::vector<Field *> &fields() {
+		return fields_;
+	}
+
+	WordSet getWords(Board &board) const {
+		WordSet ret;
+
+		for (auto &field : fields_) {
+			Word horizontal = field->getWord(kEast, board);
+			Word vertical = field->getWord(kSouth, board);
+			if (horizontal.size() > 1) {
+				ret.insert(std::move(horizontal));
+			}
+			if (vertical.size() > 1) {
+				ret.insert(std::move(vertical));
+			}
+		}
+
+		return ret;
+	}
+
 private:
-	std::vector<const Field *> fields_;
+	std::vector<Field *> fields_;
 };
 
 #endif

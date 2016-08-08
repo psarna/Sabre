@@ -10,7 +10,7 @@ public:
 	static const int kMaxHand = 7;
 	typedef std::array<Tile, kMaxHand> Hand;
 
-	Player() : hand_(), move_() {}
+	Player(const std::string &name) : name_(name), hand_(), move_() {}
 
 	Tile getTile(int i) const {
 		assert(i >= 0 && i < kMaxHand);
@@ -56,6 +56,14 @@ public:
 		return hand_;
 	}
 
+	Move &getMove() {
+		return move_;
+	}
+
+	const Move &getMove() const {
+		return move_;
+	}
+
 	int tileCount() const {
 		return kMaxHand - std::count(hand_.begin(), hand_.end(), (Tile)TileBag::kNoTile);
 	}
@@ -68,6 +76,7 @@ public:
 	}
 
 private:
+	std::string name_;
 	Hand hand_;
 	Move move_;
 };

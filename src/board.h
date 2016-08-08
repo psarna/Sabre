@@ -31,7 +31,13 @@ public:
 	}
 
 	Field &at(int x, int y);
+
+	Field &initialField() {
+		return at(height_ / 2, width_ / 2);
+	}
+
 	const Field &at(int x, int y) const;
+
 	void put(int x, int y, Tile tile);
 
 	friend std::ostream &operator<<(std::ostream &os, const Board &board);
