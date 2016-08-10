@@ -13,8 +13,8 @@ public:
 	typedef Dictionary::Word Word;
 	typedef Dictionary::WordSet WordSet;
 
-	GameController(Board &board, Dictionary &dictionary, TileBag &tile_bag)
-		: board_(board), dictionary_(dictionary), tile_bag_(tile_bag) {}
+	GameController(int x, int y, const std::string &dict_path, const std::string &tiles)
+		: board_(x, y), dictionary_(dict_path), tile_bag_(tiles) {}
 
 	void addPlayer(std::string name) {
 		players_.emplace_back(name);
@@ -110,9 +110,9 @@ public:
 
 private:
 	void nextRound();
-	Board &board_;
-	Dictionary &dictionary_;
-	TileBag &tile_bag_;
+	Board board_;
+	Dictionary dictionary_;
+	TileBag tile_bag_;
 	std::vector<Player>::iterator active_player_;
 	Field *active_field_;
 	int active_tile_index_;

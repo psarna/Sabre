@@ -10,27 +10,20 @@
 
 int main() {
 	srand(0x10);
-	Board board(6, 8);
-	TileBag tile_bag(
-		"aaaabbbbccddeeffghiiiijklllmmnnooopppqrrsstttuwwxyzz"
-	);
-	Dictionary dictionary(
-		{"abak", "eig", "asan", "qi"}
-	);
+	GameController controller(6, 8, "/usr/share/dict/british-enlish", "aaaabbbbccddeeffghiiiijklllmmnnooopppqrrsstttuwwxyzz");
 
-	GameController controller(board, dictionary, tile_bag);
 	std::cout << std::boolalpha;
-	std::cout << tile_bag << std::endl;
+	std::cout << controller.tileBag() << std::endl;
 	controller.addPlayer("Charlie");
 	std::cout << controller.getActivePlayer() << std::endl;
 	controller.gatherTiles();
 	std::cout << controller.getActivePlayer() << std::endl;
 	controller.pickTile(2);
 	controller.putTile(3, 4);
-	std::cout << board << controller.getActivePlayer() << std::endl;
+	std::cout << controller.board() << controller.getActivePlayer() << std::endl;
 	controller.pickTile(4);
 	controller.putTile(3, 4);
-	std::cout << board << controller.getActivePlayer() << std::endl;
+	std::cout << controller.board() << controller.getActivePlayer() << std::endl;
 	std::cout << controller.canCommit() << std::endl;
 	controller.pickTile(3);
 	controller.putTile(4, 4);
@@ -40,7 +33,7 @@ int main() {
 	std::cout << controller.canCommit() << std::endl;
 	controller.commit();
 	controller.gatherTiles();
-	std::cout << board << controller.getActivePlayer() << std::endl;
+	std::cout << controller.board() << controller.getActivePlayer() << std::endl;
 
 /*
 	board.put(2, 4, 'a');
